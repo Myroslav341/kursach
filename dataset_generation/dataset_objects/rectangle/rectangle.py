@@ -1,15 +1,17 @@
 import random
+from math import pi
 from ..dataset_object import DatasetObject
 from library import *
+from library import dist
 from config import Config
 
 
 class Rectangle(DatasetObject):
-    def __init__(self, config_obj):
-        self.config = config_obj
+    def __init__(self, config_obj, **kwargs):
+        super().__init__(config_obj, **kwargs)
 
     def create(self):
-        self.center, self.size = self.init_center_and_size()
+        self.center, self.size = self.__init_center_and_size()
 
         dots = []
         sign_x = 1
@@ -32,17 +34,56 @@ class Rectangle(DatasetObject):
                         ),
                     )
 
-        dots_centralize = []
+        dots_centralized = []
         for dot in dots:
-            dots_centralize.append(
+            dots_centralized.append(
                 [
-                    dot[0] - self.config[CENTER_INIT],
-                    dot[1] - self.config[CENTER_INIT],
-                    dot[2] - self.config[CENTER_INIT]
+                    dot[0] - self.config[CENTER_INIT][0],
+                    dot[1] - self.config[CENTER_INIT][1],
+                    dot[2] - self.config[CENTER_INIT][2]
                 ]
             )
+        self.dots = dots_centralized
+        self.created = True
 
-    def init_center_and_size(self):
+    def rotate(self):
+        alpha = random.randint(0, self.config[ROTATE_ANGLES][0]) * pi / 180
+        self._rotate_ox(alpha)
+
+        alpha = random.randint(0, self.config[ROTATE_ANGLES][1]) * pi / 180
+        self._rotate_oy(alpha)
+
+        alpha = random.randint(0, self.config[ROTATE_ANGLES][2]) * pi / 180
+        self._rotate_oz(alpha)
+
+    def paint(self, paint_obj):
+        super().paint(paint_obj)
+        self.further_dot = self.__find_further_dot()
+        for i in range(3):
+            self._draw_line(self.dots[i], self.dots[i + 1])
+        self._draw_line(self.dots[0], self.dots[3])
+
+        for i in range(4, 7):
+            self._draw_line(self.dots[i], self.dots[i + 1])
+        self._draw_line(self.dots[4], self.dots[7])
+
+        for i in range(4):
+            self._draw_line(self.dots[i], self.dots[i + 4])
+
+    def save(self):
+        pass
+
+    def __find_further_dot(self):
+        dot_further = (0, 0, 100000)
+        dot_max, dist_max = self.dots[0], dist(self.dots[0], dot_further)
+        for dot in self.dots[1:]:
+            dist_current = dist(dot, dot_further)
+            if dist_current > dist_max:
+                dot_further = dot
+                dist_max = dist_current
+        return dot_max
+
+    def __init_center_and_size(self):
         center = (
             self.config[CENTER_INIT][0] + random.randint(
                 -self.config[CENTER_RANDOMIZE],
@@ -58,9 +99,8 @@ class Rectangle(DatasetObject):
             )
         )
         size = self.config[SIZE_INIT] + random.randint(-self.config[SIZE_RANDOMIZE],
-                                                       min(center[0], Config.PICTURE_SIZE - center[0],
-                                                           center[1], Config.PICTURE_SIZE - center[1],
-                                                           center[2], Config.PICTURE_SIZE - center[2])
+                                                       min(center[0], Config.PICTURE_SIZE[0] - center[0],
+                                                           center[1], Config.PICTURE_SIZE[1] - center[1])
                                                        ) * 0.9
 
         return center, size

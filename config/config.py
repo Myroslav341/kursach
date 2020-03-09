@@ -3,7 +3,7 @@ from .dataset_objects import *
 
 class Config:
     class DataSet:
-        PATH = '../data/'
+        PATH = 'D:/univ/3 grade/kursach/main/data/'
         OBJECTS = [
             Rectangle,
         ]
