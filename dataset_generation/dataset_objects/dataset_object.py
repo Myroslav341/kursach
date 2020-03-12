@@ -66,10 +66,10 @@ class DatasetObject:
                 self.__paint_line(dots_curved[i], dots_curved[i + 1])
                 continue
             if cnt == 0:
-                hatch_size = self.config[HATCH_SIZE] + random.randint(-self.config[HATCH_SIZE],
-                                                                      self.config[HATCH_SIZE])
-            elif cnt == hatch_size - 1:
-                cnt = 0
+                hatch_size = self.config[HATCH_SIZE] + random.randint(-self.config[HATCH_RANDOMIZE],
+                                                                      self.config[HATCH_RANDOMIZE])
+            elif cnt == hatch_size:
+                cnt = -1
                 paint = not paint
             if paint:
                 self.__paint_line(dots_curved[i], dots_curved[i + 1])

@@ -13,26 +13,23 @@ class Rectangle(DatasetObject):
     def create(self):
         self.center, self.size = self.__init_center_and_size()
 
-        dots = []
-        sign_x = 1
-        for _ in range(2):
-            sign_x *= -1
-            sign_y = 1
-            x = self.center[0] + self.size * sign_x
-            for _ in range(2):
-                sign_y *= -1
-                sign_y = 1
-                y = self.center[1] + self.size * sign_y
-                for _ in range(2):
-                    sign_y *= -1
-                    z = self.center[2] + self.size * sign_y
-                    dots.append(
-                        (
-                            x + random.randint(-self.config[DOT_RANDOMIZE], self.config[DOT_RANDOMIZE]),
-                            y + random.randint(-self.config[DOT_RANDOMIZE], self.config[DOT_RANDOMIZE]),
-                            z + random.randint(-self.config[DOT_RANDOMIZE], self.config[DOT_RANDOMIZE])
-                        ),
-                    )
+        dots = [(self.center[0] - self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
+                 self.center[2] - self.size + random.randint(-5, 5)),
+                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
+                 self.center[2] - self.size + random.randint(-5, 5)),
+                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
+                 self.center[2] - self.size + random.randint(-5, 5)),
+                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
+                 self.center[2] - self.size + random.randint(-5, 5)),
+                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
+                 self.center[2] + self.size + random.randint(-5, 5)),
+                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
+                 self.center[2] + self.size + random.randint(-5, 5)),
+                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
+                 self.center[2] + self.size + random.randint(-5, 5)),
+                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
+                 self.center[2] + self.size + random.randint(-5, 5))
+                ]
 
         dots_centralized = []
         for dot in dots:
@@ -79,7 +76,7 @@ class Rectangle(DatasetObject):
         for dot in self.dots[1:]:
             dist_current = dist(dot, dot_further)
             if dist_current > dist_max:
-                dot_further = dot
+                dot_max = dot
                 dist_max = dist_current
         return dot_max
 
@@ -99,8 +96,6 @@ class Rectangle(DatasetObject):
             )
         )
         size = self.config[SIZE_INIT] + random.randint(-self.config[SIZE_RANDOMIZE],
-                                                       min(center[0], Config.PICTURE_SIZE[0] - center[0],
-                                                           center[1], Config.PICTURE_SIZE[1] - center[1])
-                                                       ) * 0.9
+                                                       self.config[SIZE_RANDOMIZE])
 
         return center, size
