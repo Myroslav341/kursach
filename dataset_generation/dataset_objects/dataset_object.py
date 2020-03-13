@@ -41,11 +41,13 @@ class DatasetObject:
         dots = [a] + dots + [b]
 
         dots_curved = []
+
         q = random.choice([-1, 1])
         for i in range(curves):
             q *= -1
             first = (k_dots // curves) * i
             last = (k_dots // curves) * (i + 1)
+
             if i == curves - 1:
                 dots_curved += self.__curve(dots[first:], q)[1:]
                 break
@@ -65,6 +67,7 @@ class DatasetObject:
             if not dot_line:
                 self.__paint_line(dots_curved[i], dots_curved[i + 1])
                 continue
+
             if cnt == 0:
                 hatch_size = self.config[HATCH_SIZE] + random.randint(-self.config[HATCH_RANDOMIZE],
                                                                       self.config[HATCH_RANDOMIZE])
@@ -80,11 +83,13 @@ class DatasetObject:
 
     def __curve(self, dots_for_curve: list, q: int):
         dots_inside = dots_for_curve[1:-1]
+
         try:
             normal_x, normal_y = -q / (dots_for_curve[0][0] - dots_for_curve[-1][0]), \
                      q / (dots_for_curve[0][1] - dots_for_curve[-1][1])
         except ZeroDivisionError:
             return dots_for_curve
+
         normal_vector_length = sqrt(normal_x ** 2 + normal_y ** 2)
         dots_curved = []
         f_dist = self.__function_for_curve_distance_generator(
@@ -95,7 +100,9 @@ class DatasetObject:
             distance = self.config[CURVE_DISTANCE] * dist_coefficient
             dot_new = (x[0] + distance / normal_vector_length * normal_x,
                        x[1] + distance / normal_vector_length * normal_y)
+
             dots_curved.append(dot_new)
+
         dots_curved = [dots_for_curve[0]] + dots_curved + [dots_for_curve[-1]]
         return dots_curved
 

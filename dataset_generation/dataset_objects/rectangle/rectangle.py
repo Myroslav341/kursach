@@ -3,7 +3,6 @@ from math import pi
 from ..dataset_object import DatasetObject
 from library import *
 from library import dist
-from config import Config
 
 
 class Rectangle(DatasetObject):
@@ -44,40 +43,45 @@ class Rectangle(DatasetObject):
         self.created = True
 
     def rotate(self):
-        alpha = random.randint(0, self.config[ROTATE_ANGLES][0]) * pi / 180
-        self._rotate_ox(alpha)
+        def chose_angle_and_rotate(func, number):
+            alpha = random.randint(0, self.config[ROTATE_ANGLES][number]) * pi / 180
+            getattr(self, func)(alpha)
 
-        alpha = random.randint(0, self.config[ROTATE_ANGLES][1]) * pi / 180
-        self._rotate_oy(alpha)
-
-        alpha = random.randint(0, self.config[ROTATE_ANGLES][2]) * pi / 180
-        self._rotate_oz(alpha)
+        chose_angle_and_rotate('_rotate_ox', 0)
+        chose_angle_and_rotate('_rotate_oy', 1)
+        chose_angle_and_rotate('_rotate_oz', 2)
 
     def paint(self, paint_obj):
+        def paint_lines(start, end, step=0):
+            for i in range(start, end):
+                self._draw_line(self.dots[i], self.dots[i + 1 + step])
+
         super().paint(paint_obj)
+
         self.further_dot = self.__find_further_dot()
-        for i in range(3):
-            self._draw_line(self.dots[i], self.dots[i + 1])
+
+        paint_lines(0, 3)
         self._draw_line(self.dots[0], self.dots[3])
 
-        for i in range(4, 7):
-            self._draw_line(self.dots[i], self.dots[i + 1])
+        paint_lines(4, 7)
         self._draw_line(self.dots[4], self.dots[7])
 
-        for i in range(4):
-            self._draw_line(self.dots[i], self.dots[i + 4])
+        paint_lines(0, 4, 3)
 
     def save(self):
         pass
 
     def __find_further_dot(self):
         dot_further = (0, 0, 100000)
+
         dot_max, dist_max = self.dots[0], dist(self.dots[0], dot_further)
         for dot in self.dots[1:]:
             dist_current = dist(dot, dot_further)
+
             if dist_current > dist_max:
                 dot_max = dot
                 dist_max = dist_current
+
         return dot_max
 
     def __init_center_and_size(self):
