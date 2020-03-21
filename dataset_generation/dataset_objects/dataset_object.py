@@ -1,7 +1,8 @@
 from math import cos, sin, sqrt
-from library import *
-from library import dist
 import random
+from math import pi
+from library.constants import *
+from library.helpers import dist
 
 
 class DatasetObject:
@@ -16,7 +17,13 @@ class DatasetObject:
         pass
 
     def rotate(self):
-        pass
+        def chose_angle_and_rotate(func, number):
+            alpha = random.randint(0, self.config[ROTATE_ANGLES][number]) * pi / 180
+            getattr(self, func)(alpha)
+
+        chose_angle_and_rotate('_rotate_ox', 0)
+        chose_angle_and_rotate('_rotate_oy', 1)
+        chose_angle_and_rotate('_rotate_oz', 2)
 
     def paint(self, paint_obj):
         self.paint_obj = paint_obj
@@ -24,9 +31,6 @@ class DatasetObject:
             dot[0] += self.config[CENTER_INIT][0]
             dot[1] += self.config[CENTER_INIT][1]
             dot[2] += self.config[CENTER_INIT][2]
-
-    def save(self):
-        pass
 
     def _draw_line(self, a, b):
         if self.paint_obj is None:
@@ -78,6 +82,64 @@ class DatasetObject:
                 self.__paint_line(dots_curved[i], dots_curved[i + 1])
             cnt += 1
 
+    def _rotate_ox(self, alpha):
+        dots_new = []
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0],
+                    dot[1] * cos(alpha) - dot[2] * sin(alpha),
+                    dot[1] * sin(alpha) + dot[2] * cos(alpha)
+                ]
+            )
+        self.dots = dots_new
+
+    def _rotate_oy(self, alpha):
+        dots_new = []
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0] * cos(alpha) + dot[2] * sin(alpha),
+                    dot[1],
+                    -dot[0] * sin(alpha) + dot[2] * cos(alpha)
+                ]
+            )
+        self.dots = dots_new
+
+    def _rotate_oz(self, alpha):
+        dots_new = []
+
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0] * cos(alpha) - dot[1] * sin(alpha),
+                    dot[0] * sin(alpha) + dot[1] * cos(alpha),
+                    dot[2]
+                ]
+            )
+
+        self.dots = dots_new
+
+    def _init_center_and_size(self):
+        center = (
+            random.randint(
+                -self.config[CENTER_RANDOMIZE],
+                self.config[CENTER_RANDOMIZE]
+            ),
+            random.randint(
+                -self.config[CENTER_RANDOMIZE],
+                self.config[CENTER_RANDOMIZE]
+            ),
+            random.randint(
+                -self.config[CENTER_RANDOMIZE],
+                self.config[CENTER_RANDOMIZE]
+            )
+        )
+        size = self.config[SIZE_INIT] + random.randint(-self.config[SIZE_RANDOMIZE],
+                                                       self.config[SIZE_RANDOMIZE])
+
+        return center, size
+
     def __paint_line(self, a, b):
         self.paint_obj.line([a[0], a[1], b[0], b[1]], width=5, fill=128)
 
@@ -115,39 +177,3 @@ class DatasetObject:
             return a_curve * x ** 2 + b_curve * x
 
         return f
-
-    def _rotate_ox(self, alpha):
-        dots_new = []
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0],
-                    dot[1] * cos(alpha) - dot[2] * sin(alpha),
-                    dot[1] * sin(alpha) + dot[2] * cos(alpha)
-                ]
-            )
-        self.dots = dots_new
-
-    def _rotate_oy(self, alpha):
-        dots_new = []
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0] * cos(alpha) + dot[2] * sin(alpha),
-                    dot[1],
-                    -dot[0] * sin(alpha) + dot[2] * cos(alpha)
-                ]
-            )
-        self.dots = dots_new
-
-    def _rotate_oz(self, alpha):
-        dots_new = []
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0] * cos(alpha) - dot[1] * sin(alpha),
-                    dot[0] * sin(alpha) + dot[1] * cos(alpha),
-                    dot[2]
-                ]
-            )
-        self.dots = dots_new

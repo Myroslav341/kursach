@@ -1,5 +1,5 @@
 import importlib
-from library import CNT
+from library.constants import CNT
 from PIL import Image, ImageDraw
 
 
@@ -14,11 +14,15 @@ class DataSet:
                 dataset_object_config.CLASS
             )
             for i in range(dataset_object_config.GENERATION_CONFIG[CNT]):
-                rect = object_class(dataset_object_config.GENERATION_CONFIG)
-                rect.create()
-                rect.rotate()
+                dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
+
                 im = Image.new('RGB', (200, 200), color='red')
                 draw = ImageDraw.Draw(im)
-                rect.paint(draw)
+
+                dataset_object.create()
+                dataset_object.rotate()
+                dataset_object.paint(draw)
+
                 del draw
+
                 im.save(self.config.PATH + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
