@@ -1,2 +1,3 @@
 from dataset_generation import dataset
-dataset.create()
+# dataset.create()
+dataset.for_test()

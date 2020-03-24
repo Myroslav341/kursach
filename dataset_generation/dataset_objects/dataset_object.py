@@ -2,7 +2,7 @@ from math import cos, sin, sqrt
 import random
 from math import pi
 from library.constants import *
-from library.helpers import dist
+from library.helpers import dist, function_for_curve_distance_generator
 
 
 class DatasetObject:
@@ -19,22 +19,38 @@ class DatasetObject:
     def rotate(self):
         def chose_angle_and_rotate(func, number):
             alpha = random.randint(0, self.config[ROTATE_ANGLES][number]) * pi / 180
-            getattr(self, func)(alpha)
+            func(alpha)
 
-        chose_angle_and_rotate('_rotate_ox', 0)
-        chose_angle_and_rotate('_rotate_oy', 1)
-        chose_angle_and_rotate('_rotate_oz', 2)
+        chose_angle_and_rotate(self.rotate_ox, 0)
+        chose_angle_and_rotate(self.rotate_oy, 1)
+        chose_angle_and_rotate(self.rotate_oz, 2)
 
     def paint(self, paint_obj):
         self.paint_obj = paint_obj
-        for dot in self.dots:
-            dot[0] += self.config[CENTER_INIT][0]
-            dot[1] += self.config[CENTER_INIT][1]
-            dot[2] += self.config[CENTER_INIT][2]
 
-    def _draw_line(self, a, b):
+        self.further_dot = self.__find_further_dot()
+        self.further_dot_projected = [self.further_dot[0], self.further_dot[1]]
+
+        dots_projected = []
+        for dot in self.dots:
+            dots_projected.append([dot[0], dot[1]])
+        self.dots_projected = dots_projected
+
+    def _is_line_is_dot(self, a, b) -> bool:
+        pass
+
+    def _draw_line(self, a, b, dot_line=False):
+        def prepare_dot(dot):
+            dot = dot.copy()
+            for i in range(len(dot)):
+                dot[i] += self.config[CENTER_INIT][i]
+            return dot
+
         if self.paint_obj is None:
             raise AttributeError('paint_obj is not given')
+
+        a = prepare_dot(a)
+        b = prepare_dot(b)
 
         curves = random.randint(self.config[CURVES][0], self.config[CURVES][1])
         k_dots = curves * 15 + 2
@@ -61,10 +77,6 @@ class DatasetObject:
             else:
                 dots_curved += self.__curve(dots[first:last], q)
 
-        dot_line = False
-        if self.further_dot is not None and (self.further_dot == list(a) or self.further_dot == list(b)):
-            dot_line = True
-
         cnt, hatch_size = 0, 0
         paint = True
         for i in range(len(dots_curved) - 1):
@@ -81,44 +93,6 @@ class DatasetObject:
             if paint:
                 self.__paint_line(dots_curved[i], dots_curved[i + 1])
             cnt += 1
-
-    def _rotate_ox(self, alpha):
-        dots_new = []
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0],
-                    dot[1] * cos(alpha) - dot[2] * sin(alpha),
-                    dot[1] * sin(alpha) + dot[2] * cos(alpha)
-                ]
-            )
-        self.dots = dots_new
-
-    def _rotate_oy(self, alpha):
-        dots_new = []
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0] * cos(alpha) + dot[2] * sin(alpha),
-                    dot[1],
-                    -dot[0] * sin(alpha) + dot[2] * cos(alpha)
-                ]
-            )
-        self.dots = dots_new
-
-    def _rotate_oz(self, alpha):
-        dots_new = []
-
-        for dot in self.dots:
-            dots_new.append(
-                [
-                    dot[0] * cos(alpha) - dot[1] * sin(alpha),
-                    dot[0] * sin(alpha) + dot[1] * cos(alpha),
-                    dot[2]
-                ]
-            )
-
-        self.dots = dots_new
 
     def _init_center_and_size(self):
         center = (
@@ -140,6 +114,44 @@ class DatasetObject:
 
         return center, size
 
+    def rotate_ox(self, alpha):
+        dots_new = []
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0],
+                    dot[1] * cos(alpha) - dot[2] * sin(alpha),
+                    dot[1] * sin(alpha) + dot[2] * cos(alpha)
+                ]
+            )
+        self.dots = dots_new
+
+    def rotate_oy(self, alpha):
+        dots_new = []
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0] * cos(alpha) + dot[2] * sin(alpha),
+                    dot[1],
+                    -dot[0] * sin(alpha) + dot[2] * cos(alpha)
+                ]
+            )
+        self.dots = dots_new
+
+    def rotate_oz(self, alpha):
+        dots_new = []
+
+        for dot in self.dots:
+            dots_new.append(
+                [
+                    dot[0] * cos(alpha) - dot[1] * sin(alpha),
+                    dot[0] * sin(alpha) + dot[1] * cos(alpha),
+                    dot[2]
+                ]
+            )
+
+        self.dots = dots_new
+
     def __paint_line(self, a, b):
         self.paint_obj.line([a[0], a[1], b[0], b[1]], width=5, fill=128)
 
@@ -153,27 +165,35 @@ class DatasetObject:
             return dots_for_curve
 
         normal_vector_length = sqrt(normal_x ** 2 + normal_y ** 2)
+
         dots_curved = []
-        f_dist = self.__function_for_curve_distance_generator(
+
+        f_dist = function_for_curve_distance_generator(
             dist(dots_for_curve[0], dots_for_curve[-1])
         )
+
         for x in dots_inside:
             dist_coefficient = f_dist(dist(dots_for_curve[0], x))
             distance = self.config[CURVE_DISTANCE] * dist_coefficient
+
             dot_new = (x[0] + distance / normal_vector_length * normal_x,
                        x[1] + distance / normal_vector_length * normal_y)
 
             dots_curved.append(dot_new)
 
         dots_curved = [dots_for_curve[0]] + dots_curved + [dots_for_curve[-1]]
+
         return dots_curved
 
-    @staticmethod
-    def __function_for_curve_distance_generator(max_dist):
-        a_curve = -4 / max_dist ** 2
-        b_curve = 4 / max_dist
+    def __find_further_dot(self):
+        dot_further = (0, 0, 100000)
 
-        def f(x):
-            return a_curve * x ** 2 + b_curve * x
+        dot_max, dist_max = self.dots[0], dist(self.dots[0], dot_further)
+        for dot in self.dots[1:]:
+            dist_current = dist(dot, dot_further)
 
-        return f
+            if dist_current > dist_max:
+                dot_max = dot
+                dist_max = dist_current
+
+        return dot_max

@@ -1,8 +1,9 @@
-import random
+import itertools
 from math import sqrt
 from ..dataset_object import DatasetObject
 from library.constants import *
-from library.helpers import dist, random_from_variable as _
+from library.exceptions import FurtherDotMissed
+from library.helpers import random_from_variable as _, is_dot_inside_triangle, dist
 
 
 class Pyramid(DatasetObject):
@@ -37,27 +38,65 @@ class Pyramid(DatasetObject):
     def paint(self, paint_obj):
         super().paint(paint_obj)
 
-        self._draw_line(self.dots[0], self.dots[1])
-        self._draw_line(self.dots[0], self.dots[3])
+        return
 
-        self._draw_line(self.dots[1], self.dots[2])
-        self._draw_line(self.dots[1], self.dots[3])
+        self._draw_line(self.dots[0], self.dots[1], self._is_line_is_dot(self.dots[0], self.dots[1]))
+        self._draw_line(self.dots[0], self.dots[3], self._is_line_is_dot(self.dots[0], self.dots[3]))
 
-        self._draw_line(self.dots[2], self.dots[0])
-        self._draw_line(self.dots[2], self.dots[3])
+        self._draw_line(self.dots[1], self.dots[2], self._is_line_is_dot(self.dots[1], self.dots[2]))
+        self._draw_line(self.dots[1], self.dots[3], self._is_line_is_dot(self.dots[1], self.dots[3]))
 
-        # def paint_lines(start, end, step=0):
-        #     for i in range(start, end):
-        #         self._draw_line(self.dots[i], self.dots[i + 1 + step])
-        #
-        # super().paint(paint_obj)
-        #
-        # # self.further_dot = self.__find_further_dot()
-        #
-        # paint_lines(0, 3)
-        # self._draw_line(self.dots[0], self.dots[3])
-        #
-        # paint_lines(4, 7)
-        # self._draw_line(self.dots[4], self.dots[7])
-        #
-        # paint_lines(0, 4, 3)
+        self._draw_line(self.dots[2], self.dots[0], self._is_line_is_dot(self.dots[2], self.dots[0]))
+        self._draw_line(self.dots[2], self.dots[3], self._is_line_is_dot(self.dots[2], self.dots[3]))
+
+    def _is_line_is_dot(self, a, b) -> bool:
+        if self.further_dot is None:
+            raise FurtherDotMissed
+
+        # if not list(a) == self.further_dot and not list(b) == self.further_dot:
+        #     return False
+
+        # triangle_dots = [dot for dot in self.dots_projected if not dot == self.further_dot_projected]
+        triangle_dots = [list(dots) for dots in list(itertools.combinations(self.dots_projected, 3))]
+
+        inside = False
+        dot_inside = []
+        for dots in triangle_dots:
+            dot_check = [dot for dot in self.dots_projected if dot not in dots][0]
+            if is_dot_inside_triangle(dot_check, dots):
+                inside = True
+                dot_inside = self.dots[self.dots_projected.index(dot_check)]  # todo change to 3 dimentions
+                break
+
+        print(inside)
+
+        if inside:
+            dots_on_plane = [dot for dot in self.dots if not dot == dot_inside]
+
+            dot_on_plane = [
+                (dots_on_plane[0][0] + dots_on_plane[1][0] + dots_on_plane[2][0]) / 3,
+                (dots_on_plane[0][1] + dots_on_plane[1][1] + dots_on_plane[2][1]) / 3,
+                (dots_on_plane[0][2] + dots_on_plane[1][2] + dots_on_plane[2][2]) / 3
+            ]
+            distant_dot = [0, 0, 10000000]
+
+            dist_to_plane = dist(distant_dot, dot_on_plane)
+            dist_to_further_dot = dist(dot_inside, distant_dot)
+
+            if dist_to_further_dot > dist_to_plane:
+                if list(a) == dot_inside or list(b) == dot_inside:
+                    return True
+
+        else:
+            triangle_dots = [dot for dot in self.dots_projected if not dot == self.further_dot_projected]
+            max_dist_to_triangle_dots = max([dist(self.further_dot_projected, dot) for dot in triangle_dots])
+
+            for dot in triangle_dots:
+                if not dist(self.further_dot_projected, dot) == max_dist_to_triangle_dots:
+                    continue
+
+                if ([a[0], a[1]] == dot and [b[0], b[1]] == self.further_dot_projected) or \
+                        ([a[0], a[1]] == self.further_dot_projected and [b[0], b[1]] == dot):
+                    return True
+
+        return False

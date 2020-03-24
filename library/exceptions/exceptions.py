@@ -1,0 +1,2 @@
+class FurtherDotMissed(Exception):
+    pass
