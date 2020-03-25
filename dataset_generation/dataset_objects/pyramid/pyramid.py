@@ -3,7 +3,7 @@ from math import sqrt
 from ..dataset_object import DatasetObject
 from library.constants import *
 from library.exceptions import FurtherDotMissed
-from library.helpers import random_from_variable as _, is_dot_inside_triangle, dist
+from library.helpers import random_from_variable as _, is_dot_inside_triangle, dist, angle
 
 
 class Pyramid(DatasetObject):
@@ -12,7 +12,6 @@ class Pyramid(DatasetObject):
 
     def create(self):
         self.center, self.size = self._init_center_and_size()
-
 
         dots = [
             (self.center[0] - 3 * self.size / 4 + _(self.config[DOT_RANDOMIZE]),
@@ -38,8 +37,6 @@ class Pyramid(DatasetObject):
     def paint(self, paint_obj):
         super().paint(paint_obj)
 
-        return
-
         self._draw_line(self.dots[0], self.dots[1], self._is_line_is_dot(self.dots[0], self.dots[1]))
         self._draw_line(self.dots[0], self.dots[3], self._is_line_is_dot(self.dots[0], self.dots[3]))
 
@@ -53,10 +50,6 @@ class Pyramid(DatasetObject):
         if self.further_dot is None:
             raise FurtherDotMissed
 
-        # if not list(a) == self.further_dot and not list(b) == self.further_dot:
-        #     return False
-
-        # triangle_dots = [dot for dot in self.dots_projected if not dot == self.further_dot_projected]
         triangle_dots = [list(dots) for dots in list(itertools.combinations(self.dots_projected, 3))]
 
         inside = False
@@ -65,10 +58,8 @@ class Pyramid(DatasetObject):
             dot_check = [dot for dot in self.dots_projected if dot not in dots][0]
             if is_dot_inside_triangle(dot_check, dots):
                 inside = True
-                dot_inside = self.dots[self.dots_projected.index(dot_check)]  # todo change to 3 dimentions
+                dot_inside = self.dots[self.dots_projected.index(dot_check)]
                 break
-
-        print(inside)
 
         if inside:
             dots_on_plane = [dot for dot in self.dots if not dot == dot_inside]
@@ -89,10 +80,16 @@ class Pyramid(DatasetObject):
 
         else:
             triangle_dots = [dot for dot in self.dots_projected if not dot == self.further_dot_projected]
-            max_dist_to_triangle_dots = max([dist(self.further_dot_projected, dot) for dot in triangle_dots])
+
+            triangle_dots_pairs = [list(dots) for dots in itertools.combinations(triangle_dots, 2)]
+
+            angles = [angle(self.further_dot_projected, dots) for dots in triangle_dots_pairs]
+            angle_max = max(angles)
+
+            dots_can_see = triangle_dots_pairs[angles.index(angle_max)]
 
             for dot in triangle_dots:
-                if not dist(self.further_dot_projected, dot) == max_dist_to_triangle_dots:
+                if dot in dots_can_see:
                     continue
 
                 if ([a[0], a[1]] == dot and [b[0], b[1]] == self.further_dot_projected) or \

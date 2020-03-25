@@ -1,8 +1,8 @@
-import random
+from library.constants import *
+from library.helpers import random_from_variable as _
 from ..dataset_object import DatasetObject
 
 
-# todo random dot not 5
 class Rectangle(DatasetObject):
     def __init__(self, config_obj, **kwargs):
         super().__init__(config_obj, **kwargs)
@@ -10,22 +10,37 @@ class Rectangle(DatasetObject):
     def create(self):
         self.center, self.size = self._init_center_and_size()
 
-        dots = [(self.center[0] - self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
-                 self.center[2] - self.size + random.randint(-5, 5)),
-                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
-                 self.center[2] - self.size + random.randint(-5, 5)),
-                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
-                 self.center[2] - self.size + random.randint(-5, 5)),
-                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
-                 self.center[2] - self.size + random.randint(-5, 5)),
-                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
-                 self.center[2] + self.size + random.randint(-5, 5)),
-                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] - self.size + random.randint(-5, 5),
-                 self.center[2] + self.size + random.randint(-5, 5)),
-                (self.center[0] + self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
-                 self.center[2] + self.size + random.randint(-5, 5)),
-                (self.center[0] - self.size + random.randint(-5, 5), self.center[1] + self.size + random.randint(-5, 5),
-                 self.center[2] + self.size + random.randint(-5, 5))
+        dots = [(self.center[0] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] - self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] - self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] - self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] - self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] + self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] + self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] + self.size + _(self.config[DOT_RANDOMIZE])),
+
+                (self.center[0] - self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[1] + self.size + _(self.config[DOT_RANDOMIZE]),
+                 self.center[2] + self.size + _(self.config[DOT_RANDOMIZE]))
                 ]
 
         self.dots = dots

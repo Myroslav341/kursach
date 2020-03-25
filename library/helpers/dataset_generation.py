@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, pi, acos
 import random
 import itertools
 
@@ -31,8 +31,20 @@ def is_dot_inside_triangle(dot, triangle_dots) -> bool:
 
 
 def triangle_square(dots):
+    if not len(dots) == 3:
+        raise AttributeError('dots count must be 3')
+
     d = [dist(dots[i], dots[i - 1]) for i in range(len(dots))]
 
     p = sum(d) / 2
 
     return sqrt(p * (p - d[0]) * (p - d[1]) * (p - d[2]))
+
+
+def angle(dot, dots: list) -> float:
+    if not len(dots) == 2:
+        raise AttributeError('dots count must be 2')
+
+    a, b, c = dist(dots[0], dots[1]), dist(dot, dots[0]), dist(dot, dots[1])
+
+    return acos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c)) * 180 / pi
