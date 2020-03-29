@@ -1,6 +1,5 @@
-from math import cos, sin, sqrt
 import random
-from math import pi
+from math import cos, sin, sqrt, pi
 from library.constants import *
 from library.helpers import dist, function_for_curve_distance_generator
 
@@ -9,9 +8,12 @@ class DatasetObject:
     def __init__(self, config_obj, **kwargs):
         self.config = config_obj
         self.dots = []
+        self.dots_projected = []
         self.created = False
+
         self.paint_obj = None
         self.further_dot = None
+        self.further_dot_projected = None
 
     def create(self):
         pass
@@ -32,8 +34,10 @@ class DatasetObject:
         self.further_dot_projected = [self.further_dot[0], self.further_dot[1]]
 
         dots_projected = []
+
         for dot in self.dots:
             dots_projected.append([dot[0], dot[1]])
+
         self.dots_projected = dots_projected
 
     def _is_line_is_dot(self, a, b) -> bool:

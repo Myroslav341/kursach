@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python init_dataset.py
+python main.py init_dataset

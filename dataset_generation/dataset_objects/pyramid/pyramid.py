@@ -54,6 +54,7 @@ class Pyramid(DatasetObject):
 
         inside = False
         dot_inside = []
+
         for dots in triangle_dots:
             dot_check = [dot for dot in self.dots_projected if dot not in dots][0]
             if is_dot_inside_triangle(dot_check, dots):

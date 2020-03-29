@@ -1,4 +1,4 @@
 from .dataset import DataSet
 from config import Config
 
-dataset = DataSet(Config.DataSet)
+dataset = DataSet(Config.DATASET)
