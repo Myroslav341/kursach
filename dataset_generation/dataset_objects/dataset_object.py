@@ -157,7 +157,7 @@ class DatasetObject:
         self.dots = dots_new
 
     def __paint_line(self, a, b):
-        self.paint_obj.line([a[0], a[1], b[0], b[1]], width=5, fill=128)
+        self.paint_obj.line([a[0], a[1], b[0], b[1]], width=5, fill='black')
 
     def __curve(self, dots_for_curve: list, q: int):
         dots_inside = dots_for_curve[1:-1]

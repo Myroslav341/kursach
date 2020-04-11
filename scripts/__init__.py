@@ -1,11 +1,16 @@
-from .dataset_scripts import init_dataset
 from library.constants import *
+from .dataset_scripts import init_dataset
+from .cnn_test import cnn_test
 
 
 scripts = {
     INIT_DATASET: {
         METHOD: init_dataset,
         DESCRIPTION: 'initialize dataset'
+    },
+    CNN_TEST: {
+        METHOD: cnn_test,
+        DESCRIPTION: 'mnit cnn test'
     }
 }
 

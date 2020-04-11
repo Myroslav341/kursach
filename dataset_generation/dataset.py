@@ -1,5 +1,5 @@
 import importlib
-from library.constants import CNT, OBJECTS, PICTURE_SIZE, PATH
+from library.constants import TEST_CNT, TRAIN_CNT, OBJECTS, PICTURE_SIZE, PATH
 from PIL import Image, ImageDraw
 
 
@@ -13,10 +13,10 @@ class DataSet:
                 importlib.import_module(dataset_object_config.PATH_TO_CLASS),
                 dataset_object_config.CLASS
             )
-            for i in range(dataset_object_config.GENERATION_CONFIG[CNT]):
+            for i in range(dataset_object_config.GENERATION_CONFIG[TRAIN_CNT]):
                 dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
 
-                im = Image.new('RGB', self.config[PICTURE_SIZE], color='red')
+                im = Image.new('RGB', self.config[PICTURE_SIZE], color='white')
                 draw = ImageDraw.Draw(im)
 
                 dataset_object.create()
@@ -25,7 +25,21 @@ class DataSet:
 
                 del draw
 
-                im.save(self.config[PATH] + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
+                im.save(self.config[PATH] + '\\train\\' + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
+
+            for i in range(dataset_object_config.GENERATION_CONFIG[TEST_CNT]):
+                dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
+
+                im = Image.new('RGB', self.config[PICTURE_SIZE], color='white')
+                draw = ImageDraw.Draw(im)
+
+                dataset_object.create()
+                dataset_object.rotate()
+                dataset_object.paint(draw)
+
+                del draw
+
+                im.save(self.config[PATH] + '\\test\\' + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
 
         print('\ndataset generated successfully')
 

@@ -2,13 +2,14 @@ from library.constants import *
 
 
 class Pyramid:
-    PATH_TO_DATASET = '/pyramid/'
+    PATH_TO_DATASET = 'pyramid_'
 
     PATH_TO_CLASS = 'dataset_generation.dataset_objects.pyramid.pyramid'
     CLASS = 'Pyramid'
 
     GENERATION_CONFIG = {
-        CNT: 100,
+        TRAIN_CNT: 2000,
+        TEST_CNT: 100,
 
         CENTER_INIT: (100, 100, 100),
         CENTER_RANDOMIZE: 15,
