@@ -19,7 +19,8 @@ class Pyramid:
 
         DOT_RANDOMIZE: 5,
 
-        ROTATE_ANGLES: (360, 360, 360),
+        # ROTATE_ANGLES: (360, 360, 360),
+        ROTATE_ANGLES: ((0, 360), (0, 360), (0, 360)),
 
         CURVES: (1, 2),
         CURVE_DISTANCE: 1.5,

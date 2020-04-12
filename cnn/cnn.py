@@ -1,0 +1,129 @@
+import os
+import cv2
+import keras
+from numpy import array, ndarray
+from random import shuffle
+from keras.models import Sequential, load_model
+from keras.layers import Dense, Dropout, Flatten
+from keras.layers import Conv2D, MaxPooling2D
+from keras import backend as K
+from typing import List
+from config import Config
+
+
+class CNN:
+    def train(self, save_name: str = None):
+        train_path = 'D:\\univ\\3 grade\\kursach\\main\\data\\train'
+        test_path = 'D:\\univ\\3 grade\\kursach\\main\\data\\test'
+
+        x_train, y_train = self.__load_data(train_path)
+        x_test, y_test = self.__load_data(test_path)
+
+        batch_size = 128
+        self.num_classes = 2
+        epochs = 1
+
+        img_rows, img_cols = 50, 50
+
+        if K.image_data_format() == 'channels_first':
+            x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
+            x_test = x_test.reshape(x_test.shape[0], 1, img_rows, img_cols)
+            self.input_shape = (1, img_rows, img_cols)
+        else:
+            x_train = x_train.reshape(x_train.shape[0], img_rows, img_cols, 1)
+            x_test = x_test.reshape(x_test.shape[0], img_rows, img_cols, 1)
+            self.input_shape = (img_rows, img_cols, 1)
+
+        x_train = x_train.astype('float32')
+        x_test = x_test.astype('float32')
+        x_train /= 255
+        x_test /= 255
+        print('x_train shape:', x_train.shape)
+        print(x_train.shape[0], 'train samples')
+        print(x_test.shape[0], 'test samples')
+
+        y_train = keras.utils.to_categorical(y_train, self.num_classes)
+        y_test = keras.utils.to_categorical(y_test, self.num_classes)
+
+        model = self.__create_model()
+
+        model.fit(x_train, y_train,
+                  batch_size=batch_size,
+                  epochs=epochs,
+                  verbose=1,
+                  validation_data=(x_test, y_test))
+
+        score = model.evaluate(x_test, y_test, verbose=0)
+
+        print('Test loss:', score[0])
+        print('Test accuracy:', score[1])
+
+        if save_name is not None:
+            model.save(Config.BASE_DIR + '/cnn/models/' + save_name + '.h5')
+
+    def load(self, model_name: str):
+        self.model = load_model(Config.BASE_DIR + '/cnn/models/' + model_name)
+
+    def predict(self, file_path: str) -> List[float]:
+        img_data = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+        img_data = cv2.resize(img_data, (50, 50))
+
+        img_data = img_data.reshape(1, 50, 50, 1)
+
+        img_data = img_data.astype('float32')
+
+        img_data /= 255
+
+        f = self.model.predict(img_data)
+
+        return f
+
+    def __create_model(self):
+        model = Sequential()
+        model.add(Conv2D(32, kernel_size=(5, 5),
+                         activation='relu',
+                         input_shape=self.input_shape))
+
+        model.add(Conv2D(64, (5, 5), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Conv2D(128, (5, 5), activation='relu'))
+        model.add(MaxPooling2D(pool_size=(2, 2)))
+
+        model.add(Dropout(0.15))
+        model.add(Flatten())
+        model.add(Dense(256, activation='relu'))
+        model.add(Dense(64, activation='relu'))
+        model.add(Dense(self.num_classes, activation='softmax'))
+
+        model.compile(loss=keras.losses.categorical_crossentropy,
+                      optimizer=keras.optimizers.Adadelta(),
+                      metrics=['accuracy'])
+        
+        return model
+
+    def __load_data(self, path):
+        train_pic = os.listdir(path)
+
+        data = ndarray(shape=(len(train_pic), 50, 50), dtype=float)
+        labels = array(train_pic)
+
+        for i, x in enumerate(train_pic):
+            img_data = cv2.imread(path + '\\' + x, cv2.IMREAD_GRAYSCALE)
+            img_data = cv2.resize(img_data, (50, 50))
+            data[i] = array(img_data)
+
+            if 'rect' in x:
+                labels[i] = 0
+            else:
+                labels[i] = 1
+
+        data_ = [[data[i], labels[i]] for i in range(len(train_pic))]
+
+        shuffle(data_)
+
+        for i, d in enumerate(data_):
+            data[i] = d[0]
+            labels[i] = d[1]
+
+        return data, labels

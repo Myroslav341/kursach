@@ -19,7 +19,7 @@ class Rectangle:
 
         DOT_RANDOMIZE: 3,
 
-        ROTATE_ANGLES: (60, 60, 60),
+        ROTATE_ANGLES: ((20, 60), (20, 60), (20, 60)),
 
         CURVES: (1, 2),
         CURVE_DISTANCE: 1.5,

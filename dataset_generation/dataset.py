@@ -14,14 +14,19 @@ class DataSet:
                 dataset_object_config.CLASS
             )
             for i in range(dataset_object_config.GENERATION_CONFIG[TRAIN_CNT]):
-                dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
+                while True:
+                    im = Image.new('RGB', self.config[PICTURE_SIZE], color='white')
+                    draw = ImageDraw.Draw(im)
 
-                im = Image.new('RGB', self.config[PICTURE_SIZE], color='white')
-                draw = ImageDraw.Draw(im)
+                    dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
 
-                dataset_object.create()
-                dataset_object.rotate()
-                dataset_object.paint(draw)
+                    dataset_object.create()
+                    dataset_object.rotate()
+
+                    dataset_object.paint(draw)
+
+                    if dataset_object.ok:
+                        break
 
                 del draw
 
@@ -42,24 +47,3 @@ class DataSet:
                 im.save(self.config[PATH] + '\\test\\' + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
 
         print('\ndataset generated successfully')
-
-    def for_test(self):
-        for dataset_object_config in self.config.OBJECTS:
-            object_class = getattr(
-                importlib.import_module(dataset_object_config.PATH_TO_CLASS),
-                dataset_object_config.CLASS
-            )
-            dataset_object = object_class(dataset_object_config.GENERATION_CONFIG)
-
-            dataset_object.create()
-            dataset_object.paint(None)
-
-            from windows import AppWindow
-            from PyQt5 import QtWidgets
-            import sys
-
-            app = QtWidgets.QApplication(sys.argv)
-            window = AppWindow(dataset_object)
-            window.show()
-            window.paint()
-            app.exec_()

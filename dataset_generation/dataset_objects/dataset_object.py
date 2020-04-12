@@ -20,7 +20,8 @@ class DatasetObject:
 
     def rotate(self):
         def chose_angle_and_rotate(func, number):
-            alpha = random.randint(0, self.config[ROTATE_ANGLES][number]) * pi / 180
+            alpha = random.randint(self.config[ROTATE_ANGLES][number][0],
+                                   self.config[ROTATE_ANGLES][number][1]) * pi / 180
             func(alpha)
 
         chose_angle_and_rotate(self.rotate_ox, 0)
