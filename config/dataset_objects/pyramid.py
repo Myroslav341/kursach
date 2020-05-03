@@ -8,8 +8,8 @@ class Pyramid:
     CLASS = 'Pyramid'
 
     GENERATION_CONFIG = {
-        TRAIN_CNT: 2000,
-        TEST_CNT: 100,
+        TRAIN_CNT: 15000,
+        TEST_CNT: 4000,
 
         CENTER_INIT: (100, 100, 100),
         CENTER_RANDOMIZE: 15,
@@ -20,7 +20,7 @@ class Pyramid:
         DOT_RANDOMIZE: 5,
 
         # ROTATE_ANGLES: (360, 360, 360),
-        ROTATE_ANGLES: ((0, 360), (0, 360), (0, 360)),
+        ROTATE_ANGLES: ((20, 160), (20, 160), (20, 160)),
 
         CURVES: (1, 2),
         CURVE_DISTANCE: 1.5,

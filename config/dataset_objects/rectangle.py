@@ -8,8 +8,8 @@ class Rectangle:
     CLASS = 'Rectangle'
 
     GENERATION_CONFIG = {
-        TRAIN_CNT: 2000,
-        TEST_CNT: 100,
+        TRAIN_CNT: 15000,
+        TEST_CNT: 4000,
 
         CENTER_INIT: (100, 100, 100),
         CENTER_RANDOMIZE: 20,

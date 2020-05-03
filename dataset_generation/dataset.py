@@ -44,6 +44,6 @@ class DataSet:
 
                 del draw
 
-                im.save(self.config[PATH] + '\\test\\' + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
+                im.save(self.config[PATH] + '\\validate\\' + dataset_object_config.PATH_TO_DATASET + f'{i}.png')
 
         print('\ndataset generated successfully')

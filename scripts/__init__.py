@@ -2,6 +2,7 @@ from library.constants import *
 from .dataset_scripts import init_dataset
 from .cnn_test import cnn_predict, cnn_train
 from .paint_predict import paint_predict
+from .test import test
 
 
 scripts = {
@@ -20,6 +21,10 @@ scripts = {
     PAINT_PREDICT: {
         METHOD: paint_predict,
         DESCRIPTION: 'predict via paint'
+    },
+    'test': {
+        METHOD: test,
+        DESCRIPTION: 'for test'
     }
 }
 

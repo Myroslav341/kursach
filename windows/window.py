@@ -48,7 +48,7 @@ class AppWindow(QtWidgets.QMainWindow, PaintUI):
     def mouseMoveEvent(self, event):
         if (event.buttons() & Qt.LeftButton) & self.drawing:
             painter = QPainter(self.image)
-            painter.setPen(QPen(Qt.black, 5, Qt.SolidLine))
+            painter.setPen(QPen(Qt.black, 7, Qt.SolidLine))
             painter.drawLine(self.lastPoint, event.pos())
             self.lastPoint = event.pos()
             self.update()
