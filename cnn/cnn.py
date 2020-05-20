@@ -128,57 +128,57 @@ class CNN:
     def __create_model(self):
         model = Sequential()
         model.add(Conv2D(8, kernel_size=(3, 3),
-                         # activation='relu',
+                         activation='relu',
                          input_shape=self.input_shape))
-        model.add(PReLU())
+        # model.add(PReLU())
 
         model.add(Conv2D(16, (3, 3),
-                         # activation='relu'
+                         activation='relu'
                          ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Conv2D(32, (3, 3),
-                         # activation='relu'
+                         activation='relu'
                          ))
-        model.add(PReLU())
+        # model.add(PReLU())
 
         model.add(Conv2D(64, (3, 3),
-                         # activation='relu'
+                         activation='relu'
                          ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Conv2D(128, (3, 3),
-                         # activation='relu'
+                         activation='relu'
                          ))
-        model.add(PReLU())
+        # model.add(PReLU())
 
         model.add(Conv2D(128, (3, 3),
-                         # activation='relu'
+                         activation='relu'
                          ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
 
         model.add(Dense(1024,
-                        # activation='relu'
+                        activation='relu'
                         ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(Dropout(0.5))
         model.add(Dense(512,
-                        # activation='relu'
+                        activation='relu'
                         ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(Dense(256,
-                        # activation='relu'
+                        activation='relu'
                         ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(Dense(64,
-                        # activation='relu'
+                        activation='relu'
                         ))
-        model.add(PReLU())
+        # model.add(PReLU())
         model.add(Dense(self.num_classes, activation='softmax'))
 
         model.compile(loss=keras.losses.categorical_crossentropy,

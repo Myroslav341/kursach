@@ -57,6 +57,9 @@ class Rectangle(DatasetObject):
 
         super().paint(paint_obj)
 
+        if paint_obj is None:
+            return
+
         from library.helpers import dist
 
         dots = [list(dots) for dots in list(itertools.combinations(self.dots_projected, 2))]

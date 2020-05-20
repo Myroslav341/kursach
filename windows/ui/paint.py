@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
+        MainWindow.setObjectName("PaintPredict")
         MainWindow.resize(400, 400)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -67,9 +67,9 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("PaintPredict", "PaintPredict"))
         self.pushButton.setText(_translate("MainWindow", "Predict"))
-        self.label.setText(_translate("MainWindow", "Rect"))
+        self.label.setText(_translate("MainWindow", "Cube"))
         self.label_2.setText(_translate("MainWindow", "Pyramid"))
         self.menuclear.setTitle(_translate("MainWindow", "file"))
         self.actionclear.setText(_translate("MainWindow", "clear"))

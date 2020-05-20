@@ -8,8 +8,8 @@ class Rectangle:
     CLASS = 'Rectangle'
 
     GENERATION_CONFIG = {
-        TRAIN_CNT: 15000,
-        TEST_CNT: 4000,
+        TRAIN_CNT: 20,
+        TEST_CNT: 0,
 
         CENTER_INIT: (100, 100, 100),
         CENTER_RANDOMIZE: 20,
@@ -25,5 +25,23 @@ class Rectangle:
         CURVE_DISTANCE: 1.5,
 
         HATCH_SIZE: 4,
-        HATCH_RANDOMIZE: 1
+        HATCH_RANDOMIZE: 1,
+    }
+
+    CREATION_CONFIG = {
+        CENTER_INIT: (100, 100, 100),
+        CENTER_RANDOMIZE: 0,
+
+        SIZE_INIT: 70,
+        SIZE_RANDOMIZE: 0,
+
+        DOT_RANDOMIZE: 0,
+
+        ROTATE_ANGLES: ((60, 60), (60, 60), (60, 60)),
+
+        CURVES: (0, 0),
+        CURVE_DISTANCE: 0,
+
+        HATCH_SIZE: 4,
+        HATCH_RANDOMIZE: 0,
     }

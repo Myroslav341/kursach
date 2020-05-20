@@ -1,11 +1,15 @@
 import random
+from math import pi
 from string import ascii_lowercase
 from config import Config
-from PyQt5.QtGui import QPainter, QImage, QPen
+from PyQt5.QtGui import QPainter, QImage, QPen, QColor
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QPoint
 from PyQt5.QtWidgets import QFileDialog
 from .ui import PaintUI
+from dataset_generation.dataset_objects import Rectangle as RectangleObject
+from dataset_generation.dataset_objects import Pyramid as PyramidObject
+from config.dataset_objects import Rectangle, Pyramid
 
 
 class AppWindow(QtWidgets.QMainWindow, PaintUI):
@@ -21,19 +25,78 @@ class AppWindow(QtWidgets.QMainWindow, PaintUI):
         self.actionclear.triggered.connect(self.clear)
         self.pushButton.clicked.connect(self.predict)
 
+        self.mode_paint = True
+        self.center = (180, 180, 200)
+        self.alpha = 2 * pi / 180
+
     def predict(self):
         path = self.save()
         r = self.model.predict(path)
         self.textEdit.setText(str(r[0][0]))
         self.textEdit_2.setText(str(r[0][1]))
 
+        if r[0][0] > r[0][1]:
+            self.create_cube()
+
+        if r[0][0] < r[0][1]:
+            self.create_pyramid()
+
+        self.mode_paint = False
+        self.update()
+
+    def create_cube(self):
+        self.object = RectangleObject(Rectangle.CREATION_CONFIG)
+        self.object.create()
+        self.paint_order = [[0, 1], [1, 2], [2, 3], [0, 3], [4, 5], [5, 6], [6, 7], [4, 7],
+                            [0, 4], [1, 5], [2, 6], [3, 7]]
+
+    def create_pyramid(self):
+        self.object = PyramidObject(Pyramid.CREATION_CONFIG)
+        self.object.create()
+        self.paint_order = [[0, 1], [1, 2], [0, 2], [0, 3], [1, 3], [2, 3]]
+
     def clear(self):
         self.image.fill(Qt.white)
+        self.object = None
+        self.mode_paint = True
+        self.textEdit.setText('')
+        self.textEdit_2.setText('')
+
         self.update()
 
     def paintEvent(self, event):
-        canvasPainter = QPainter(self)
-        canvasPainter.drawImage(self.rect(), self.image, self.image.rect())
+        def draw_line():
+            if self.object._is_line_is_dot(self.object.dots[a], self.object.dots[b]):
+                self.myLineColor.setRgb(255, 0, 0)
+                qp.setPen(self.myLineColor)
+                qp.drawLine(QPoint(dots_[a][0], dots_[a][1]), QPoint(dots_[b][0], dots_[b][1]))
+            else:
+                self.myLineColor.setRgb(0, 0, 0)
+                qp.setPen(self.myLineColor)
+                qp.drawLine(QPoint(dots_[a][0], dots_[a][1]), QPoint(dots_[b][0], dots_[b][1]))
+
+        if self.mode_paint:
+            canvasPainter = QPainter(self)
+            canvasPainter.drawImage(self.rect(), self.image, self.image.rect())
+            return
+
+        qp = QPainter()
+        qp.begin(self)
+
+        dots_ = []
+        for dot in self.object.dots:
+            dots_.append([dot[0] + self.center[0], dot[1] + self.center[1], dot[2] + self.center[2]])
+
+        self.myLineColor = QColor()
+        self.myLineColor.setRgb(0, 0, 0)
+        qp.setPen(self.myLineColor)
+
+        self.object.paint(None)
+
+        for a, b in self.paint_order:
+            draw_line()
+
+        qp.end()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -41,7 +104,6 @@ class AppWindow(QtWidgets.QMainWindow, PaintUI):
             self.lastPoint = event.pos()
 
     def mouseReleaseEvent(self, event):
-
         if event.button() == Qt.LeftButton:
             self.drawing = False
 
@@ -67,13 +129,13 @@ class AppWindow(QtWidgets.QMainWindow, PaintUI):
             return Config.BASE_DIR + '/tests/' + name
 
     def keyPressEvent(self, e):
-        if e.key() == Qt.Key_Left:
+        if e.key() == Qt.Key_J:
             self.object.rotate_oy(-self.alpha)
-        if e.key() == Qt.Key_Right:
+        if e.key() == Qt.Key_L:
             self.object.rotate_oy(self.alpha)
-        if e.key() == Qt.Key_Up:
+        if e.key() == Qt.Key_I:
             self.object.rotate_ox(-self.alpha)
-        if e.key() == Qt.Key_Down:
+        if e.key() == Qt.Key_K:
             self.object.rotate_ox(self.alpha)
         if e.key() == Qt.Key_A:
             self.object.rotate_oz(-self.alpha)

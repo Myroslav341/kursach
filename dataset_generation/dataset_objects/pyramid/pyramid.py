@@ -43,6 +43,9 @@ class Pyramid(DatasetObject):
             if dist(x[0], x[1]) < 20:
                 self.ok = False
 
+        if paint_obj is None:
+            return
+
         self._draw_line(self.dots[0], self.dots[1], self._is_line_is_dot(self.dots[0], self.dots[1]))
         self._draw_line(self.dots[0], self.dots[3], self._is_line_is_dot(self.dots[0], self.dots[3]))
 
