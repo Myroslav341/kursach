@@ -8,6 +8,7 @@ from library.helpers import random_from_variable as _, is_dot_inside_triangle, d
 
 class Pyramid(DatasetObject):
     def __init__(self, config_obj, **kwargs):
+        self.ok = True
         super().__init__(config_obj, **kwargs)
 
     def create(self):
@@ -36,6 +37,14 @@ class Pyramid(DatasetObject):
 
     def paint(self, paint_obj):
         super().paint(paint_obj)
+
+        dots = [list(dots) for dots in list(itertools.combinations(self.dots_projected, 2))]
+        for x in dots:
+            if dist(x[0], x[1]) < 20:
+                self.ok = False
+
+        if paint_obj is None:
+            return
 
         self._draw_line(self.dots[0], self.dots[1], self._is_line_is_dot(self.dots[0], self.dots[1]))
         self._draw_line(self.dots[0], self.dots[3], self._is_line_is_dot(self.dots[0], self.dots[3]))

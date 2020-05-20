@@ -1,12 +1,26 @@
-from .dataset_scripts import init_dataset
 from library.constants import *
+from .dataset_scripts import init_dataset
+from .cnn_test import cnn_predict, cnn_train
+from .paint_predict import paint_predict
 
 
 scripts = {
     INIT_DATASET: {
         METHOD: init_dataset,
         DESCRIPTION: 'initialize dataset'
-    }
+    },
+    CNN_TRAIN: {
+        METHOD: cnn_train,
+        DESCRIPTION: 'train cnn'
+    },
+    CNN_PREDICT: {
+        METHOD: cnn_predict,
+        DESCRIPTION: 'cnn predict'
+    },
+    PAINT_PREDICT: {
+        METHOD: paint_predict,
+        DESCRIPTION: 'predict via paint'
+    },
 }
 
 
@@ -20,7 +34,7 @@ def start_project(args: list):
     if params is None:
         scripts[action][METHOD]()
     else:
-        scripts[action][METHOD](params)
+        scripts[action][METHOD](*params)
 
 
 def get_action_and_params(args: list):

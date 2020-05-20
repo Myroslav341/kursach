@@ -1,3 +1,5 @@
+import itertools
+
 from library.constants import *
 from library.helpers import random_from_variable as _
 from ..dataset_object import DatasetObject
@@ -5,6 +7,7 @@ from ..dataset_object import DatasetObject
 
 class Rectangle(DatasetObject):
     def __init__(self, config_obj, **kwargs):
+        self.ok = True
         super().__init__(config_obj, **kwargs)
 
     def create(self):
@@ -53,6 +56,16 @@ class Rectangle(DatasetObject):
                 self._draw_line(a, b, self._is_line_is_dot(a, b))
 
         super().paint(paint_obj)
+
+        if paint_obj is None:
+            return
+
+        from library.helpers import dist
+
+        dots = [list(dots) for dots in list(itertools.combinations(self.dots_projected, 2))]
+        for x in dots:
+            if dist(x[0], x[1]) < 20:
+                self.ok = False
 
         paint_lines(0, 3)
         self._draw_line(self.dots[0], self.dots[3], self._is_line_is_dot(self.dots[0], self.dots[3]))
