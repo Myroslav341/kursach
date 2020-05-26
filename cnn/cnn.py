@@ -3,9 +3,8 @@ import cv2
 import keras
 from keras_preprocessing.image import ImageDataGenerator
 from numpy import array, ndarray
-from random import shuffle
 from keras.models import Sequential, load_model
-from keras.layers import Dense, Dropout, Flatten, PReLU
+from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
 from keras.utils import print_summary
@@ -30,9 +29,6 @@ class CNN:
 
         img_rows, img_cols = 64, 64
 
-        # mean = ndarray.mean(x_train[0])
-        # print(mean)
-
         if K.image_data_format() == 'channels_first':
             x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
             x_validate = x_validate.reshape(x_validate.shape[0], 1, img_rows, img_cols)
@@ -47,10 +43,6 @@ class CNN:
         x_train = x_train.astype('float32')
         x_validate = x_validate.astype('float32')
         x_test = x_test.astype('float32')
-
-        # x_train = (x_train - mean) / 255
-        # x_validate = (x_validate - mean) / 255
-        # x_test = (x_test - mean) / 255
 
         x_train /= 255
         x_validate /= 255
@@ -69,8 +61,6 @@ class CNN:
         print_summary(model)
 
         aug = ImageDataGenerator(
-            # rotation_range=20,
-            # zoom_range=0.15,
             horizontal_flip=True,
             vertical_flip=True,
             fill_mode="nearest"
@@ -130,34 +120,28 @@ class CNN:
         model.add(Conv2D(8, kernel_size=(3, 3),
                          activation='relu',
                          input_shape=self.input_shape))
-        # model.add(PReLU())
 
         model.add(Conv2D(16, (3, 3),
                          activation='relu'
                          ))
-        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Conv2D(32, (3, 3),
                          activation='relu'
                          ))
-        # model.add(PReLU())
 
         model.add(Conv2D(64, (3, 3),
                          activation='relu'
                          ))
-        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Conv2D(128, (3, 3),
                          activation='relu'
                          ))
-        # model.add(PReLU())
 
         model.add(Conv2D(128, (3, 3),
                          activation='relu'
                          ))
-        # model.add(PReLU())
         model.add(MaxPooling2D(pool_size=(2, 2)))
 
         model.add(Flatten())
@@ -165,20 +149,16 @@ class CNN:
         model.add(Dense(1024,
                         activation='relu'
                         ))
-        # model.add(PReLU())
         model.add(Dropout(0.5))
         model.add(Dense(512,
                         activation='relu'
                         ))
-        # model.add(PReLU())
         model.add(Dense(256,
                         activation='relu'
                         ))
-        # model.add(PReLU())
         model.add(Dense(64,
                         activation='relu'
                         ))
-        # model.add(PReLU())
         model.add(Dense(self.num_classes, activation='softmax'))
 
         model.compile(loss=keras.losses.categorical_crossentropy,
@@ -204,13 +184,3 @@ class CNN:
                 labels[i] = 1
 
         return data, labels
-
-        # data_to_shuffle = [[data[i], labels[i]] for i in range(len(train_pic))]
-        #
-        # shuffle(data_to_shuffle)
-        #
-        # for i, d in enumerate(data_to_shuffle):
-        #     data[i] = d[0]
-        #     labels[i] = d[1]
-        #
-        # return data, labels
